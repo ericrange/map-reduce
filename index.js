@@ -45,8 +45,8 @@ let mapper = (doc) => {
 
   if (profile.indexOf(day) > -1) {
     return {
-      key: parseInt((hour * 60 + minute) / interval),
-      value: doc.cpu.total
+      key:   parseInt((hour * 60 + minute) / interval),
+      value: parseInt(doc.cpu.total)
     };
   }
 };
