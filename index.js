@@ -1,29 +1,51 @@
 "use strict";
-var groups = {};
-var emit = (key, value) => {
-  if (!groups[key]) {
-    groups[key] = [];
+
+class MapReduce {
+  constructor(docs) {
+    this.docs = docs;
+    this.groups = {};
   }
-  groups[key].push(value);
-};
 
-var mapreduce = (docs, mapper, reducer) => {
-  docs.forEach((doc) => {
-    mapper(doc);
-  });
+  emit(key, value) {
+    if (!this.groups[key]) {
+      this.groups[key] = [];
+    }
+    this.groups[key].push(value);
+  }
 
-  let output = [];
-  Object.keys(groups).forEach((key) => {
-    output.push(reducer(key, groups[key]));
-  });
-  return output;
-};
+  run(mapper, reducer) {
+    let that = this;
+    let result = [];
 
-var docs = require('./alles.json').metrics;
-var days = [2, 3, 4];
+    /* Run the mapper. */
+    this.docs.forEach((doc) => {
+      let map = mapper(doc);
+      map && that.emit(map.key, map.value);
+    });
 
-let mapper = (doc) => {
-  let date = new Date(doc._id);
+    /* Run the reducer */
+    let c = Object.keys(this.groups).forEach((key) => {
+      result.push(reducer(key, that.groups[key]));
+    });
+
+    console.log(result);
+    return result;
+  }
+}
+
+var docs = require('./daten.json');
+
+/* 0 = "Sunday"    */
+/* 1 = "Monday"    */
+/* 2 = "Tuesday"   */
+/* 3 = "Wednesday" */
+/* 4 = "Thursday"  */
+/* 5 = "Friday"    */
+/* 6 = "Saturday"  */
+var profile = [1, 2, 3, 4, 5];
+
+let mapper = (doc, ctx) => {
+  let date = new Date(doc.unix);
   let day = date.getDay();
   let hour = date.getHours();
   let minute = date.getMinutes();
@@ -31,19 +53,22 @@ let mapper = (doc) => {
 
   let interval = 5;
 
-  if (days.indexOf(day) !== -1) {
-    emit(parseInt(key / interval), doc.net_sent);
+  if (profile.indexOf(day) !== -1) {
+    return {
+      key: parseInt(key / interval),
+      value: doc.cpu.total
+    };
   }
 };
 
 let reducer = (key, values) => {
-  let mean = values.reduce((a, b) => {
+  let mean = (values.reduce((a, b) => {
     return a + b;
-  }) / values.length;
+  }) / values.length).toFixed(4);
   return {
-    key, mean
+    mean, key
   };
 };
 
-let out = mapreduce(docs, mapper, reducer);
-console.log(out);
+let mapreduce = new MapReduce(docs);
+mapreduce.run(mapper, reducer);

@@ -1,0 +1,17 @@
+{
+  "curly": true,
+  "eqnull": true,
+  "eqeqeq": true,
+  "undef": true,
+  "globals": {
+    "console": true,
+    "document": true,
+    "__dirname": true,
+    "require": true,
+    "module": true,
+    "global": true,
+    "Promise": true,
+    "window": true
+  },
+  "esnext": true
+}
