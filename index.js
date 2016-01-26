@@ -21,7 +21,7 @@ class MapReduce {
       map && that.emit(map.key, map.value);
     });
 
-    /* Run the reducer */
+    /* Run the reducer. */
     let c = Object.keys(this.groups).forEach((key) => {
       result.push(reducer(key, that.groups[key]));
     });
