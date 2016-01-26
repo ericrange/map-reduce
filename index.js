@@ -22,7 +22,7 @@ class MapReduce {
     });
 
     /* Run the reducer. */
-    let c = Object.keys(this.groups).forEach((key) => {
+    Object.keys(this.groups).forEach((key) => {
       result.push({
         key: key,
         value: reducer(key, that.groups[key])
