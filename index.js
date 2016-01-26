@@ -23,7 +23,10 @@ class MapReduce {
 
     /* Run the reducer. */
     let c = Object.keys(this.groups).forEach((key) => {
-      result.push(reducer(key, that.groups[key]));
+      result.push({
+        key: key,
+        value: reducer(key, that.groups[key])
+      });
     });
 
     console.log(result);
@@ -49,11 +52,9 @@ let mapper = (doc) => {
 };
 
 let reducer = (key, values) => {
-  return {
-    key, value: (values.reduce((a, b) => {
-      return a + b;
-    }) / values.length).toFixed(4)
-  };
+  return (values.reduce((a, b) => {
+    return a + b;
+  }) / values.length).toFixed(4);
 };
 
 let docs = require('./daten.json');
