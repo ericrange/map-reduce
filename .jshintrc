@@ -13,5 +13,6 @@
     "Promise": true,
     "window": true
   },
-  "esnext": true
+  "esnext": true,
+  "bitwise": false
 }

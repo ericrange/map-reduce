@@ -7,9 +7,7 @@ class MapReduce {
   }
 
   emit(key, value) {
-    if (!this.groups[key]) {
-      this.groups[key] = [];
-    }
+    !this.groups[key] && (this.groups[key] = []);
     this.groups[key].push(value);
   }
 
@@ -33,42 +31,31 @@ class MapReduce {
   }
 }
 
-var docs = require('./daten.json');
 
-/* 0 = "Sunday"    */
-/* 1 = "Monday"    */
-/* 2 = "Tuesday"   */
-/* 3 = "Wednesday" */
-/* 4 = "Thursday"  */
-/* 5 = "Friday"    */
-/* 6 = "Saturday"  */
-var profile = [1, 2, 3, 4, 5];
-
-let mapper = (doc, ctx) => {
-  let date = new Date(doc.unix);
-  let day = date.getDay();
-  let hour = date.getHours();
-  let minute = date.getMinutes();
-  let key = hour * 60 + minute;
-
+let profile = [1, 2, 3, 4, 5];
+let mapper = (doc) => {
+  let date     = new Date(doc.unix);
+  let day      = date.getDay();
+  let hour     = date.getHours();
+  let minute   = date.getMinutes();
   let interval = 5;
 
-  if (profile.indexOf(day) !== -1) {
+  if (profile.indexOf(day) > -1) {
     return {
-      key: parseInt(key / interval),
+      key: parseInt((hour * 60 + minute) / interval),
       value: doc.cpu.total
     };
   }
 };
 
 let reducer = (key, values) => {
-  let mean = (values.reduce((a, b) => {
-    return a + b;
-  }) / values.length).toFixed(4);
   return {
-    mean, key
+    key, value: (values.reduce((a, b) => {
+      return a + b;
+    }) / values.length).toFixed(4)
   };
 };
 
+let docs = require('./daten.json');
 let mapreduce = new MapReduce(docs);
 mapreduce.run(mapper, reducer);
