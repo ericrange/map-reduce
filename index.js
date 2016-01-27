@@ -24,8 +24,7 @@ class MapReduce {
     /* Run the reducer. */
     Object.keys(this.groups).forEach((key) => {
       result.push({
-        key: key,
-        value: reducer(key, that.groups[key])
+        key, value: reducer(key, that.groups[key])
       });
     });
 
@@ -39,14 +38,12 @@ let profile = [1, 2, 3, 4, 5];
 let mapper = (doc) => {
   let date     = new Date(doc.unix);
   let day      = date.getDay();
-  let hour     = date.getHours();
-  let minute   = date.getMinutes();
   let interval = 5;
 
   if (profile.indexOf(day) > -1) {
     return {
-      key:   parseInt((hour * 60 + minute) / interval),
-      value: parseInt(doc.cpu.total)
+      key:   parseInt((date.getHours() * 60 + date.getMinutes()) / interval),
+      value: Math.round(doc.cpu.total)
     };
   }
 };
