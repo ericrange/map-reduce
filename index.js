@@ -34,8 +34,8 @@ class MapReduce {
 }
 
 
-let profile = [1, 2, 3, 4, 5];
-let mapper = (doc) => {
+const profile = [1, 2, 3, 4, 5];
+const mapper = (doc) => {
   let date     = new Date(doc.unix);
   let day      = date.getDay();
   let interval = 5;
@@ -48,12 +48,12 @@ let mapper = (doc) => {
   }
 };
 
-let reducer = (key, values) => {
+const reducer = (key, values) => {
   return (values.reduce((a, b) => {
     return a + b;
   }) / values.length).toFixed(4);
 };
 
-let docs = require('./daten.json');
-let mapreduce = new MapReduce(docs);
-mapreduce.run(mapper, reducer);
+const docs = require('./daten.json');
+const aggregate = new MapReduce(docs);
+      aggregate.run(mapper, reducer);
